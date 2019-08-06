@@ -1,3 +1,6 @@
+// clang-format off
+#include <lint.h>
+// clang-format on
 #include <8052.h>
 
 #define lcden P1_5
@@ -25,7 +28,7 @@ unsigned char lcd_read()
     lcden = 0;
     lcdrw = 0;
 }
-void lcd_write(unsigned char rs, unsigned char data)
+void lcd_write(unsigned char rs, unsigned char dat)
 {
     while (lcd_read() & 0x80)
         ;
@@ -34,7 +37,7 @@ void lcd_write(unsigned char rs, unsigned char data)
         rs = 1;
     }
     asm("nop");
-    lcddb = data;
+    lcddb = dat;
     lcden = 1;
     asm("nop");
     lcden = 0;
