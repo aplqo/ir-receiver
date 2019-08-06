@@ -1,9 +1,3 @@
-//for editor
-#define __sfr unsigned char
-#define __at(X)
-#define __code
-#define __sbit unsigned char
-
 #include <8052.h>
 
 #define lcden P1_5
