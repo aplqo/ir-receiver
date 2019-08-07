@@ -59,6 +59,9 @@ void init()
     }
     // lcd init
     {
+        lcd_write(0, 0x01);
+        lcd_write(0, 0x38);
+        lcd_write(0, 0x08);
         display_str(0x05, "Send:");
         display_str(0x40, "Key:");
         display_str(0x47, "User:");
