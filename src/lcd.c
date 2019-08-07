@@ -48,7 +48,7 @@ void lcd_write(unsigned char rs, unsigned char dat)
 void display_str(unsigned char pos, const char* str)
 {
     lcd_write(0, 0x80 | pos);
-    for (char* i = str; (*i) != '\0'; i++)
+    for (const char* i = str; (*i) != '\0'; i++)
     {
         lcd_write(1, *i);
     }
