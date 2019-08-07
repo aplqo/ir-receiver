@@ -216,11 +216,11 @@ void main()
     }
 }
 
-void interrupt(TF0_VECTOR) tf0()
+void tf0() __interrupt(TF0_VECTOR)
 {
     current++;
 }
-void interrupt(IE1_VECTOR) ie1()
+void ie1() __interrupt(IE1_VECTOR)
 {
     tim = current;
     rx = 0xff;
