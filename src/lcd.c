@@ -45,12 +45,12 @@ void lcd_write(unsigned char rs, unsigned char dat)
     lcdrs = 0;
 }
 
-void display_str(unsigned char pos, const char* str)
+void display_str(unsigned char pos, unsigned char langth, const char* str)
 {
     lcd_write(0, 0x80 | pos);
-    for (const char* i = str; (*i) != '\0'; i++)
+    for (unsigned char i = 0; i < langth; i++)
     {
-        lcd_write(1, *i);
+        lcd_write(1, str[i]);
     }
 }
 void display_uchar(unsigned char pos, unsigned char dat)

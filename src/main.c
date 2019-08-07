@@ -62,9 +62,9 @@ void init()
         lcd_write(0, 0x01);
         lcd_write(0, 0x38);
         lcd_write(0, 0x08);
-        display_str(0x05, "Send:");
-        display_str(0x40, "Key:");
-        display_str(0x47, "User:");
+        display_str(0x05, 5, "Send:");
+        display_str(0x40, 4, "Key:");
+        display_str(0x47, 5, "User:");
     }
     EA = 1;
     TR0 = 1;
@@ -78,10 +78,10 @@ void update()
     case NUL:
         return;
     case NEC:
-        display_str(0x00, "NEC ");
+        display_str(0x00, 4, "NEC ");
         break;
     case SIRC:
-        display_str(0x00, "SIRC");
+        display_str(0x00, 4, "SIRC");
         break;
     }
     display_uchar(0x0a, result.send);
