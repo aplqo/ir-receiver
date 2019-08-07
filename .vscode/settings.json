@@ -2,5 +2,11 @@
     "terminal.integrated.env.windows": {
         "PATH": "C:\\Users\\asdf\\.platformio\\penv\\Scripts;C:\\Users\\asdf\\.platformio\\penv;C:\\windows\\system32;C:\\windows;C:\\windows\\System32\\Wbem;C:\\windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\windows\\System32\\OpenSSH\\;C:\\Program Files\\Microsoft VS Code\\bin;C:\\Program Files\\PuTTY\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\;C:\\Program Files\\CMake\\bin;C:\\Program Files\\Git\\cmd;C:\\Users\\asdf\\AppData\\Local\\Microsoft\\WindowsApps;C:\\adb;;C:\\windows\\system32;C:\\windows;C:\\windows\\System32\\Wbem;C:\\windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\windows\\System32\\OpenSSH\\;C:\\Program Files\\Microsoft VS Code\\bin;C:\\Program Files\\PuTTY\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\;C:\\Program Files\\CMake\\bin;C:\\Program Files\\Git\\cmd;C:\\Users\\asdf\\AppData\\Local\\Microsoft\\WindowsApps;C:\\adb;",
         "PLATFORMIO_CALLER": "vscode"
+    },
+    "files.associations": {
+        "8052.h": "c",
+        "8051.h": "c",
+        "lint.h": "c",
+        "lcd.h": "c"
     }
 }
