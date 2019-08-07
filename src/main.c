@@ -57,6 +57,12 @@ void init()
         EX1 = 1;
         ET0 = 1;
     }
+    // lcd init
+    {
+        display_str(0x05, "Send:");
+        display_str(0x40, "Key:");
+        display_str(0x47, "User:");
+    }
     EA = 1;
     TR0 = 1;
     TR1 = 1;
@@ -75,9 +81,9 @@ void update()
         display_str(0x00, "SIRC");
         break;
     }
-    display_uchar(0x0b, result.send);
+    display_uchar(0x0a, result.send);
     display_uchar(0x44, result.key);
-    display_uchar(0x4d, result.user);
+    display_uchar(0x4c, result.user);
 }
 _Bool equal(unsigned char a, unsigned char b)
 {
