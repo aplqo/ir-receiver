@@ -33,6 +33,7 @@ struct
 } result;
 volatile unsigned char tim;
 volatile unsigned char current = 0;
+volatile unsigned char rx;
 
 __bit deco = 0, complete; // if is decoding
 unsigned char digit;
@@ -77,14 +78,6 @@ void update()
     display_uchar(0x0b, result.send);
     display_uchar(0x44, result.key);
     display_uchar(0x4d, result.user);
-}
-void send()
-{
-    while (TI)
-        ;
-    SBUF = result.send;
-    while (TI)
-        ;
 }
 _Bool equal(unsigned char a, unsigned char b)
 {
@@ -198,6 +191,23 @@ void decode()
 void main()
 {
     init();
+    while (1)
+    {
+        if (rx)
+        {
+            decode();
+        }
+        if (complete)
+        {
+            while (TI)
+                ;
+            SBUF = result.send;
+            while (TI)
+                ;
+            update();
+            reset();
+        }
+    }
 }
 
 void interrupt(TF0_VECTOR) tf0()
@@ -207,4 +217,5 @@ void interrupt(TF0_VECTOR) tf0()
 void interrupt(IE1_VECTOR) ie1()
 {
     tim = current;
+    rx = 0xff;
 }
