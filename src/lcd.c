@@ -34,7 +34,7 @@ void lcd_write(unsigned char rs, unsigned char dat)
         ;
     if (rs)
     {
-        rs = 1;
+        lcdrs = 1;
     }
     asm("nop");
     lcddb = dat;
