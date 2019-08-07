@@ -21,12 +21,13 @@ unsigned char lcd_read()
     lcdrs = 0;
     lcdrw = 1;
     lcddb = 0xff;
-    asm("nop");
+    __asm__("nop");
     lcden = 1;
-    asm("nop");
+    __asm__("nop");
     result = lcddb;
     lcden = 0;
     lcdrw = 0;
+    return result;
 }
 void lcd_write(unsigned char rs, unsigned char dat)
 {
@@ -36,10 +37,10 @@ void lcd_write(unsigned char rs, unsigned char dat)
     {
         lcdrs = 1;
     }
-    asm("nop");
+    __asm__("nop");
     lcddb = dat;
     lcden = 1;
-    asm("nop");
+    __asm__("nop");
     lcden = 0;
     lcdrs = 0;
 }
