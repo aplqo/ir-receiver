@@ -64,9 +64,9 @@ void init()
         lcd_write(0, 0x0c);
         lcd_write(0, 0x06);
         lcd_write(0, 0x01);
-        display_str(0x05, 5, "Send:");
+        display_str(0x07, 5, "Send:");
         display_str(0x40, 4, "Key:");
-        display_str(0x47, 5, "User:");
+        display_str(0x48, 5, "User:");
     }
     EA = 1;
     TR0 = 1;
