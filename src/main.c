@@ -202,6 +202,7 @@ void decode()
 void main()
 {
     init();
+    reset();
     while (1)
     {
         if (rx)
