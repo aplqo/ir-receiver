@@ -40,6 +40,7 @@ unsigned char digit;
 
 void init()
 {
+    P0 = 0xff;
     //timer init
     {
         TMOD = 0x22;
