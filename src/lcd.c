@@ -18,6 +18,7 @@ const __code unsigned char hex[] = {
 unsigned char lcd_read()
 {
     unsigned char result;
+    lcden = 0;
     lcdrs = 0;
     lcdrw = 1;
     lcddb = 0xff;
@@ -37,6 +38,7 @@ void lcd_write(unsigned char rs, unsigned char dat)
     {
         lcdrs = 1;
     }
+    lcden = 0;
     __asm__("nop");
     lcddb = dat;
     lcden = 1;
