@@ -55,6 +55,7 @@ void init()
     }
     {
         SCON = 0x40; // mode 1
+        TI = 1;
     }
     //interrupt init
     {
@@ -226,6 +227,13 @@ void decode()
         break;
     }
 }
+void send(unsigned char dat)
+{
+    while (!TI)
+        ;
+    TI = 0;
+    SBUF = result.send;
+}
 
 void main()
 {
@@ -240,12 +248,8 @@ void main()
         }
         if (complete)
         {
-            while (TI)
-                ;
-            SBUF = result.send;
-            while (TI)
-                ;
             update();
+            send(result.send);
             reset();
         }
     }
