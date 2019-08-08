@@ -232,7 +232,7 @@ void send(unsigned char dat)
     while (!TI)
         ;
     TI = 0;
-    SBUF = result.send;
+    SBUF = dat;
 }
 
 void main()
