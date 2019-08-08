@@ -98,7 +98,7 @@ _Bool equal(unsigned char a, unsigned char b)
 {
     unsigned char b1 = b + comp_dif;
     unsigned char b2 = b - comp_dif;
-    return (a >= b1 && a <= b2);
+    return (a <= b1 && a >= b2);
 }
 void reset()
 {
