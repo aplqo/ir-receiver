@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "lcd.h"
 
-#define comp_dif 20
+#define comp_dif 2
 
 struct config
 {
@@ -108,7 +108,7 @@ void reset()
 void decode()
 {
     static unsigned char last;
-    unsigned char rev[2];
+    static unsigned char rev[2];
     if (!deco)
     {
         deco = 1;
