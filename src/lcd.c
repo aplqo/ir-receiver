@@ -38,13 +38,15 @@ void lcd_write(unsigned char rs, unsigned char dat)
     {
         lcdrs = 1;
     }
+    lcddb = dat;
+    __asm__("nop");
     lcden = 0;
     __asm__("nop");
-    lcddb = dat;
     lcden = 1;
     __asm__("nop");
     lcden = 0;
     lcdrs = 0;
+    lcddb = 0xff;
 }
 
 void display_str(unsigned char pos, unsigned char langth, const char* str)
