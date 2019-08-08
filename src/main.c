@@ -184,7 +184,6 @@ unsigned char decode_bit(unsigned char dif)
 void decode()
 {
     static unsigned char last;
-    static unsigned char rev[2];
     if (!deco)
     {
         deco = 1;
