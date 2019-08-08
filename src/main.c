@@ -11,12 +11,16 @@ struct config
 {
     unsigned char start; //start bit
     unsigned char num[2];
-    unsigned char address[2];
-    unsigned char command[2];
 };
+#define NEC_COMMAND 24
+#define NEC_COMMAND_REV 32
+#define NEC_ADDRESS 8
+#define NEC_ADDRESS_REV 16
+#define SIRC_COMMAND 7
+#define SIRC_ADDRESS 15
 const __code struct config conf[2] = {
-    { 135, { 11, 23 }, { 8, 16 }, { 24, 32 } },
-    { 30, { 12, 18 }, { 5, 5 }, { 12, 12 } }
+    { 135, { 11, 23 } },
+    { 30, { 12, 18 } }
 };
 
 struct
@@ -105,6 +109,78 @@ void reset()
     deco = 0;
     complete = 0;
 }
+void decode_sirc(unsigned char b)
+{
+    if (digit < SIRC_COMMAND)
+    {
+        b <<= digit;
+        result.key |= b;
+    }
+    else if (digit < SIRC_ADDRESS)
+    {
+        b <<= digit - SIRC_ADDRESS;
+        result.user |= b;
+    }
+    digit++;
+    if (digit == SIRC_ADDRESS)
+    {
+        deco = 0;
+        complete = 1;
+    }
+}
+void decode_nec(unsigned char b)
+{
+    static unsigned char rev[2];
+    if (digit < NEC_ADDRESS)
+    {
+        b <<= digit;
+        result.user |= b;
+    }
+    else if (digit < NEC_ADDRESS_REV)
+    {
+        b <<= digit - NEC_ADDRESS_REV;
+        rev[0] |= b;
+    }
+    else if (digit < NEC_COMMAND)
+    {
+        b <<= digit - NEC_COMMAND;
+        result.key |= b;
+    }
+    else if (digit < NEC_COMMAND_REV)
+    {
+        b <<= digit - NEC_COMMAND_REV;
+        rev[1] |= b;
+    }
+    digit++;
+    if (digit == NEC_COMMAND_REV)
+    {
+        if ((~rev[0]) != result.user)
+        {
+            reset();
+            return;
+        }
+        if ((~rev[1]) != result.key)
+        {
+            reset();
+            return;
+        }
+        deco = 0;
+        complete = 1;
+    }
+}
+unsigned char decode_bit(unsigned char dif)
+{
+    const struct config* c = conf + result.type;
+    if (equal(dif, c->num[0]))
+    {
+        return 0;
+    }
+    else if (equal(dif, c->num[1]))
+    {
+        return 1;
+    }
+    return 2;
+}
 void decode()
 {
     static unsigned char last;
@@ -129,73 +205,26 @@ void decode()
         }
         else
         {
-            deco = 0;
+            reset();
         }
         return;
     }
-    unsigned char tmp, shif;
-    const struct config* c = conf + result.type;
-    if (equal(dif, c->num[0]))
-    {
-        tmp = 0;
-    }
-    else if (equal(dif, c->num[1]))
-    {
-        tmp = 1;
-    }
-    else
+    unsigned char tmp = decode_bit(dif);
+    if (tmp == 2)
     {
         reset();
         return;
     }
-    if (digit < (c->address[0]))
+    switch (result.type)
     {
-        shif = (c->address[0]) - digit;
-        tmp <<= shif;
-        result.user |= tmp;
-    }
-    else if (digit < (c->address[1]))
-    {
-        shif = (c->address[1]) - digit;
-        tmp <<= shif;
-        rev[0] |= tmp;
-    }
-    else if (digit < (c->command[0]))
-    {
-        shif = (c->command[0]) - digit;
-        tmp <<= shif;
-        result.key |= tmp;
-    }
-    else if (digit < (c->command[1]))
-    {
-        shif = (c->command[1]) - digit;
-        tmp <<= shif;
-        rev[1] |= tmp;
-    }
-    digit++;
-    if (digit == (c->command[1]))
-    {
-        //check sum
-        {
-            if ((c->address[0]) != (c->address[1]))
-            {
-                if ((~rev[0]) != result.user)
-                {
-                    reset();
-                    return;
-                }
-            }
-            if ((c->command[0]) != (c->command[1]))
-            {
-                if ((~rev[1]) != result.key)
-                {
-                    reset();
-                    return;
-                }
-            }
-        }
-        deco = 0;
-        complete = 1;
+    case NEC:
+        decode_nec(tmp);
+        break;
+    case SIRC:
+        decode_sirc(tmp);
+        break;
+    default:
+        break;
     }
 }
 
@@ -208,6 +237,7 @@ void main()
         if (rx)
         {
             decode();
+            rx = 0x00;
         }
         if (complete)
         {
