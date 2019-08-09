@@ -130,6 +130,8 @@ void reset()
     TL2 = RCAP2L;
     TH2 = RCAP2H;
     current = 0;
+    rx_pos = 0;
+    decode_pos = 0;
 
     result.type = NUL;
     result.user = 0x00;
