@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "lcd.h"
 
-#define comp_dif 2
+#define comp_dif 3
 
 struct config
 {
@@ -37,10 +37,12 @@ struct
 } result;
 volatile unsigned char tim;
 volatile unsigned char current = 0;
-volatile unsigned char rx;
+volatile unsigned char rx, timeout;
 
 __bit deco = 0, complete; // if is decoding
 unsigned char digit;
+
+void send(unsigned char);
 
 void init()
 {
@@ -73,7 +75,6 @@ void init()
         display_str(0x40, 4, "Key:");
         display_str(0x48, 5, "User:");
     }
-    EA = 1;
     TR0 = 1;
     TR1 = 1;
 }
@@ -103,12 +104,23 @@ _Bool equal(unsigned char a, unsigned char b)
 }
 void reset()
 {
+    EA = 0;
+
+    TR0 = 0;
+    TL0 = TH0;
+    current = 0;
+
     result.type = NUL;
     result.user = 0x00;
     result.key = 0x00;
     digit = 0;
+
     deco = 0;
     complete = 0;
+
+    rx = 0x00;
+    timeout = 0x00;
+    EA = 1;
 }
 void decode_sirc(unsigned char b)
 {
@@ -125,6 +137,7 @@ void decode_sirc(unsigned char b)
     digit++;
     if (digit == SIRC_ADDRESS)
     {
+        EA = 0;
         deco = 0;
         complete = 1;
     }
@@ -155,6 +168,7 @@ void decode_nec(unsigned char b)
     digit++;
     if (digit == NEC_COMMAND_REV)
     {
+        EA = 0;
         if ((~rev[0]) != result.user)
         {
             reset();
@@ -184,22 +198,19 @@ unsigned char decode_bit(unsigned char dif)
 }
 void decode()
 {
-    static unsigned char last;
     if (!deco)
     {
         deco = 1;
-        last = tim;
         return;
     }
-    unsigned char dif = tim > last ? tim - last : 255 - last + tim;
-    last = tim;
+    unsigned char t = tim;
     if (result.type == NUL) //decode start bit
     {
-        if (equal(dif, conf[SIRC].start))
+        if (equal(t, conf[SIRC].start))
         {
             result.type = SIRC;
         }
-        else if (equal(dif, conf[NEC].start))
+        else if (equal(t, conf[NEC].start))
         {
             result.type = NEC;
         }
@@ -209,7 +220,7 @@ void decode()
         }
         return;
     }
-    unsigned char tmp = decode_bit(dif);
+    unsigned char tmp = decode_bit(t);
     if (tmp == 2)
     {
         reset();
@@ -246,6 +257,10 @@ void main()
             decode();
             rx = 0x00;
         }
+        if (timeout)
+        {
+            reset();
+        }
         if (complete)
         {
             update();
@@ -258,9 +273,16 @@ void main()
 void tf0() __interrupt(TF0_VECTOR)
 {
     current++;
+    if (current == 0)
+    {
+        timeout = 0xff;
+    }
 }
 void ie1() __interrupt(IE1_VECTOR)
 {
     tim = current;
+    TR0 = 1;
+    TL0 = TH0;
+    current = 0;
     rx = 0xff;
 }
