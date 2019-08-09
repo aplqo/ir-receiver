@@ -107,9 +107,9 @@ void update()
         display_str(0x00, 4, "SIRC");
         break;
     }
-    display_uchar(0x0a, result.send);
+    display_uchar(0x0c, result.send);
     display_uchar(0x44, result.key);
-    display_uchar(0x4c, result.user);
+    display_uchar(0x4d, result.user);
 }
 _Bool equal(unsigned char a, unsigned char b)
 {
