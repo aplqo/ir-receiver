@@ -6,6 +6,7 @@
 #include "lcd.h"
 
 #define comp_dif 3
+#define buf_size 32
 
 struct config
 {
@@ -35,7 +36,7 @@ struct
     unsigned char key;
     unsigned char send;
 } result;
-volatile unsigned char tim[32];
+volatile unsigned char tim[buf_size];
 volatile unsigned char rx_pos = 0;
 unsigned char decode_pos = 0;
 volatile unsigned char current = 0;
@@ -272,7 +273,7 @@ void decode()
 {
     unsigned char t = tim[decode_pos];
     decode_pos++;
-    if (decode_pos == 32)
+    if (decode_pos == buf_size)
         decode_pos = 0;
 #ifdef DEBUG_TIM
     sec(0xdd);
@@ -373,7 +374,7 @@ void ie1() __interrupt(IE1_VECTOR)
     current = 0;
     TR2 = 1;
     rx_pos++;
-    if (rx_pos == 32)
+    if (rx_pos == buf_size)
     {
         rx_pos = 0;
     }
