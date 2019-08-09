@@ -159,6 +159,22 @@ void decode_sirc(unsigned char b)
     {
         b <<= digit - SIRC_ADDRESS;
         result.user |= b;
+        if (digit == SIRC_ADDRESS - 2)
+        {
+            while (current < 9)
+                ;
+            if (P3_3)
+            {
+                b = 1;
+            }
+            else
+            {
+                b = 0;
+            }
+            b <<= SIRC_ADDRESS - 1 - SIRC_COMMAND;
+            result.user |= b;
+            digit++;
+        }
     }
     digit++;
     if (digit == SIRC_ADDRESS)
@@ -196,6 +212,22 @@ void decode_nec(unsigned char b)
     {
         b <<= digit - NEC_COMMAND_REV;
         rev[1] |= b;
+        if (digit == (NEC_COMMAND_REV - 2))
+        {
+            while (current < 13)
+                ;
+            if (P3_3)
+            {
+                b = 1;
+            }
+            else
+            {
+                b = 0;
+            }
+            b <<= NEC_COMMAND_REV - 1 - NEC_COMMAND;
+            rev[1] |= b;
+            digit++;
+        }
     }
     digit++;
     if (digit == NEC_COMMAND_REV)
