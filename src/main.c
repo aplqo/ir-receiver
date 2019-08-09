@@ -35,7 +35,9 @@ struct
     unsigned char key;
     unsigned char send;
 } result;
-volatile unsigned char tim;
+volatile unsigned char tim[32];
+volatile unsigned char rx_pos = 0;
+unsigned char decode_pos = 0;
 volatile unsigned char current = 0;
 volatile unsigned char rx, timeout;
 
@@ -62,8 +64,10 @@ void init()
     //timer init
     {
         TMOD = 0x22;
-        TH0 = 164;
-        TL0 = 164;
+        TH2 = 0xff;
+        TL2 = 0xa4;
+        RCAP2H = 0xff;
+        RCAP2L = 0xa4;
         TH1 = 0xfd;
         TL1 = 0xfd;
     }
@@ -75,7 +79,7 @@ void init()
     {
         IT1 = 1;
         EX1 = 1;
-        ET0 = 1;
+        ET2 = 1;
     }
     // lcd init
     {
@@ -122,8 +126,9 @@ void reset()
 {
     EA = 0;
 
-    TR0 = 0;
-    TL0 = TH0;
+    TR2 = 0;
+    TL2 = RCAP2L;
+    TH2 = RCAP2H;
     current = 0;
 
     result.type = NUL;
@@ -231,16 +236,19 @@ unsigned char decode_bit(unsigned char dif)
 }
 void decode()
 {
+    unsigned char t = tim[decode_pos];
+    decode_pos++;
+    if (decode_pos == 32)
+        decode_pos = 0;
+#ifdef DEBUG_TIM
+    sec(0xdd);
+    send(t);
+#endif
     if (!deco)
     {
         deco = 1;
         return;
     }
-    unsigned char t = tim;
-#ifdef DEBUG_TIM
-    sec(0xdd);
-    send(t);
-#endif
     if (result.type == NUL) //decode start bit
     {
         if (equal(t, conf[SIRC].start))
@@ -292,7 +300,10 @@ void main()
         if (rx)
         {
             decode();
-            rx = 0x00;
+            if (decode_pos == rx_pos)
+            {
+                rx = 0x00;
+            }
         }
         if (timeout)
         {
@@ -310,8 +321,9 @@ void main()
     }
 }
 
-void tf0() __interrupt(TF0_VECTOR)
+void tf2() __interrupt(5) //tf2 vector
 {
+    TF2 = 0;
     current++;
     if (current == 0)
     {
@@ -320,9 +332,15 @@ void tf0() __interrupt(TF0_VECTOR)
 }
 void ie1() __interrupt(IE1_VECTOR)
 {
-    tim = current;
-    TL0 = TH0;
+    tim[rx_pos] = current;
+    TL2 = RCAP2L;
+    TH2 = RCAP2H;
     current = 0;
-    TR0 = 1;
+    TR2 = 1;
+    rx_pos++;
+    if (rx_pos == 32)
+    {
+        rx_pos = 0;
+    }
     rx = 0xff;
 }
