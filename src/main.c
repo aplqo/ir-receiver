@@ -87,7 +87,6 @@ void init()
         display_str(0x40, 4, "Key:");
         display_str(0x48, 5, "User:");
     }
-    TR0 = 1;
     TR1 = 1;
 }
 
@@ -240,7 +239,7 @@ void decode()
     unsigned char t = tim;
 #ifdef DEBUG_TIM
     sec(0xdd);
-    send(tim);
+    send(t);
 #endif
     if (result.type == NUL) //decode start bit
     {
@@ -322,8 +321,8 @@ void tf0() __interrupt(TF0_VECTOR)
 void ie1() __interrupt(IE1_VECTOR)
 {
     tim = current;
-    TR0 = 1;
     TL0 = TH0;
     current = 0;
+    TR0 = 1;
     rx = 0xff;
 }
