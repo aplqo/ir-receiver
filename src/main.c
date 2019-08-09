@@ -245,6 +245,7 @@ void decode()
 #ifdef DEBUG_TIM
     sec(0xdd);
     send(t);
+    send(digit);
 #endif
     if (!deco)
     {
