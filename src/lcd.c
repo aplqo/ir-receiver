@@ -60,8 +60,8 @@ void display_str(unsigned char pos, unsigned char langth, const char* str)
 void display_uchar(unsigned char pos, unsigned char dat)
 {
     lcd_write(0, 0x80 | pos);
-    unsigned char t = dat & 0x0f;
+    unsigned char t = dat >> 4;
     lcd_write(1, hex[t]);
-    t = dat >> 4;
+    t = dat & 0x0f;
     lcd_write(1, hex[t]);
 }
