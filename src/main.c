@@ -44,6 +44,18 @@ unsigned char digit;
 
 void send(unsigned char);
 
+#ifdef DEBUG
+void sec(unsigned char num)
+{
+    for (unsigned char i = 0; i < 3; i++)
+    {
+        send(0x00);
+    }
+    send(num);
+    send(0x00);
+}
+#endif
+
 void init()
 {
     P0 = 0xff;
@@ -98,6 +110,11 @@ void update()
 }
 _Bool equal(unsigned char a, unsigned char b)
 {
+#ifdef DEBUG_EQUAL
+    sec(0xee);
+    send(a);
+    send(b);
+#endif
     unsigned char b1 = b + comp_dif;
     unsigned char b2 = b - comp_dif;
     return (a <= b1 && a >= b2);
@@ -121,6 +138,9 @@ void reset()
     rx = 0x00;
     timeout = 0x00;
     EA = 1;
+#ifdef DEBUG_RESET
+    sec(0x01);
+#endif
 }
 void decode_sirc(unsigned char b)
 {
@@ -140,6 +160,12 @@ void decode_sirc(unsigned char b)
         EA = 0;
         deco = 0;
         complete = 1;
+#ifdef DEBUG_SIRC
+        sec(0xcc);
+        send(0x0c);
+        send(result.user);
+        send(result.key);
+#endif
     }
 }
 void decode_nec(unsigned char b)
@@ -169,6 +195,14 @@ void decode_nec(unsigned char b)
     if (digit == NEC_COMMAND_REV)
     {
         EA = 0;
+#ifdef DEBUG_NEC
+        sec(0xcc);
+        send(0x0e);
+        send(result.user);
+        send(rev[0]);
+        send(result.key);
+        send(rev[1]);
+#endif
         if ((~rev[0]) != result.user)
         {
             reset();
@@ -204,6 +238,10 @@ void decode()
         return;
     }
     unsigned char t = tim;
+#ifdef DEBUG_TIM
+    sec(0xdd);
+    send(tim);
+#endif
     if (result.type == NUL) //decode start bit
     {
         if (equal(t, conf[SIRC].start))
@@ -259,6 +297,9 @@ void main()
         }
         if (timeout)
         {
+#ifdef DEBUG_TIM
+            sec(0xaa);
+#endif
             reset();
         }
         if (complete)
