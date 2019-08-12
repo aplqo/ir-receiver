@@ -40,7 +40,7 @@ volatile unsigned char tim[buf_size];
 volatile unsigned char rx_pos = 0;
 unsigned char decode_pos = 0;
 volatile unsigned char current = 0;
-volatile unsigned char rx, timeout;
+volatile unsigned char rx = 0x00, timeout = 0x00;
 
 __bit deco = 0, complete; // if is decoding
 unsigned char digit;
@@ -128,7 +128,7 @@ inline void rr()
 {
     mask <<= 1;
 }
-void reset()
+void reset_recv()
 {
     EA = 0;
 
@@ -139,6 +139,14 @@ void reset()
     rx_pos = 0;
     decode_pos = 0;
 
+    EA = 1;
+#ifdef DEBUG_RESET
+    sec(0x01);
+    send(0xc0);
+#endif
+}
+void reset_result()
+{
     result.type = NUL;
     result.user = 0x00;
     result.key = 0x00;
@@ -148,11 +156,9 @@ void reset()
     deco = 0;
     complete = 0;
 
-    rx = 0x00;
-    timeout = 0x00;
-    EA = 1;
 #ifdef DEBUG_RESET
     sec(0x01);
+    send(0xe0);
 #endif
 }
 void decode_sirc(unsigned char b)
@@ -182,9 +188,9 @@ void decode_sirc(unsigned char b)
     rr();
     if (digit == SIRC_ADDRESS)
     {
-        EA = 0;
         deco = 0;
         complete = 1;
+        reset_recv();
 #ifdef DEBUG_SIRC
         sec(0xcc);
         send(0x0c);
@@ -231,7 +237,7 @@ void decode_nec(unsigned char b)
     }
     if (digit == NEC_COMMAND_REV)
     {
-        EA = 0;
+        reset_recv();
 #ifdef DEBUG_NEC
         sec(0xcc);
         send(0x0e);
@@ -242,12 +248,12 @@ void decode_nec(unsigned char b)
 #endif
         if ((~rev[0]) != result.user)
         {
-            reset();
+            reset_result();
             return;
         }
         if ((~rev[1]) != result.key)
         {
-            reset();
+            reset_result();
             return;
         }
         deco = 0;
@@ -295,14 +301,16 @@ void decode()
         }
         else
         {
-            reset();
+            reset_recv();
+            reset_result();
         }
         return;
     }
     unsigned char tmp = decode_bit(t);
     if (tmp == 0xff)
     {
-        reset();
+        reset_recv();
+        reset_result();
         return;
     }
     switch (result.type)
@@ -328,7 +336,8 @@ void send(unsigned char dat)
 void main()
 {
     init();
-    reset();
+    reset_recv();
+    reset_result();
     while (1)
     {
         if (rx)
@@ -344,13 +353,15 @@ void main()
 #ifdef DEBUG_TIM
             sec(0xaa);
 #endif
-            reset();
+            reset_recv();
+            reset_result();
+            timeout = 0x00;
         }
         if (complete)
         {
             update();
             send(result.send);
-            reset();
+            reset_result();
         }
     }
 }
