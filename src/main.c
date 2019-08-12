@@ -36,6 +36,7 @@ struct
     unsigned char key;
     unsigned char send;
 } result;
+unsigned char rev[2];
 volatile unsigned char tim[buf_size];
 volatile unsigned char rx_pos = 0;
 unsigned char decode_pos = 0;
@@ -150,6 +151,10 @@ void reset_result()
     result.type = NUL;
     result.user = 0x00;
     result.key = 0x00;
+
+    rev[0] = 0x00;
+    rev[1] = 0x00;
+
     digit = 0;
     mask = 0x01;
 
@@ -172,7 +177,7 @@ void decode_sirc(unsigned char b)
         result.user |= b;
         if (digit == SIRC_ADDRESS - 2)
         {
-            while (current < 9)
+            while (current < 9 + 1)
                 ;
             b = P3_3 ? 0x80 : 0x00;
             result.user |= b;
@@ -201,7 +206,6 @@ void decode_sirc(unsigned char b)
 }
 void decode_nec(unsigned char b)
 {
-    static unsigned char rev[2];
     if (digit < NEC_ADDRESS)
     {
         result.user |= b;
@@ -217,14 +221,6 @@ void decode_nec(unsigned char b)
     else if (digit < NEC_COMMAND_REV)
     {
         rev[1] |= b;
-        if (digit == (NEC_COMMAND_REV - 2))
-        {
-            while (current < 13)
-                ;
-            b = P3_3 ? 0x00 : 0x80;
-            rev[1] |= b;
-            digit++;
-        }
     }
     digit++;
     if ((digit % 8) == 0)
