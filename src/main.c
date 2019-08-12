@@ -5,13 +5,13 @@
 #include <stdbool.h>
 #include "lcd.h"
 
-#define comp_dif 3
 #define buf_size 34
 
 struct config
 {
     unsigned char start; //start bit
     unsigned char num[2];
+    unsigned char dif;
 };
 #define NEC_COMMAND 24
 #define NEC_COMMAND_REV 32
@@ -20,8 +20,8 @@ struct config
 #define SIRC_COMMAND 7
 #define SIRC_ADDRESS 15
 const __code struct config conf[2] = {
-    { 135, { 11 + 1, 23 + 1 } },
-    { 30, { 12 + 1, 18 + 1 } }
+    { 135, { 11 + 1, 23 + 1 }, 5 },
+    { 30, { 12 + 1, 18 + 1 }, 2 }
 };
 
 struct
@@ -113,15 +113,15 @@ void update()
     display_uchar(0x44, result.key);
     display_uchar(0x4d, result.user);
 }
-_Bool equal(unsigned char a, unsigned char b)
+_Bool equal(unsigned char a, unsigned char b, unsigned char dif)
 {
 #ifdef DEBUG_EQUAL
     sec(0xee);
     send(a);
     send(b);
 #endif
-    unsigned char b1 = b + comp_dif;
-    unsigned char b2 = b - comp_dif;
+    unsigned char b1 = b + dif;
+    unsigned char b2 = b - dif;
     return (a <= b1 && a >= b2);
 }
 inline void rr()
@@ -263,11 +263,12 @@ void decode_nec(unsigned char b)
 unsigned char decode_bit(unsigned char dif)
 {
     const struct config* c = conf + result.type;
-    if (equal(dif, c->num[0]))
+
+    if (equal(dif, c->num[0], c->dif))
     {
         return 0x00;
     }
-    else if (equal(dif, c->num[1]))
+    else if (equal(dif, c->num[1], c->dif))
     {
         return mask;
     }
@@ -291,11 +292,11 @@ void decode()
     }
     if (result.type == NUL) //decode start bit
     {
-        if (equal(t, conf[SIRC].start))
+        if (equal(t, conf[SIRC].start, conf[SIRC].dif))
         {
             result.type = SIRC;
         }
-        else if (equal(t, conf[NEC].start))
+        else if (equal(t, conf[NEC].start, conf[NEC].dif))
         {
             result.type = NEC;
         }
