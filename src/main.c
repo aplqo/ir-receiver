@@ -6,7 +6,7 @@
 #include "lcd.h"
 
 #define comp_dif 3
-#define buf_size 32
+#define buf_size 34
 
 struct config
 {
@@ -44,6 +44,7 @@ volatile unsigned char rx, timeout;
 
 __bit deco = 0, complete; // if is decoding
 unsigned char digit;
+unsigned char mask = 0x01;
 
 void send(unsigned char);
 
@@ -123,6 +124,10 @@ _Bool equal(unsigned char a, unsigned char b)
     unsigned char b2 = b - comp_dif;
     return (a <= b1 && a >= b2);
 }
+inline void rr()
+{
+    mask <<= 1;
+}
 void reset()
 {
     EA = 0;
@@ -138,6 +143,7 @@ void reset()
     result.user = 0x00;
     result.key = 0x00;
     digit = 0;
+    mask = 0x01;
 
     deco = 0;
     complete = 0;
@@ -153,31 +159,27 @@ void decode_sirc(unsigned char b)
 {
     if (digit < SIRC_COMMAND)
     {
-        b <<= digit;
         result.key |= b;
     }
     else if (digit < SIRC_ADDRESS)
     {
-        b <<= digit - SIRC_ADDRESS;
         result.user |= b;
         if (digit == SIRC_ADDRESS - 2)
         {
             while (current < 9)
                 ;
-            if (P3_3)
-            {
-                b = 1;
-            }
-            else
-            {
-                b = 0;
-            }
-            b <<= SIRC_ADDRESS - 1 - SIRC_COMMAND;
+            b = P3_3 ? 0x80 : 0x00;
             result.user |= b;
             digit++;
         }
     }
     digit++;
+    if (digit == SIRC_COMMAND)
+    {
+        mask = 0x01;
+        return;
+    }
+    rr();
     if (digit == SIRC_ADDRESS)
     {
         EA = 0;
@@ -196,41 +198,37 @@ void decode_nec(unsigned char b)
     static unsigned char rev[2];
     if (digit < NEC_ADDRESS)
     {
-        b <<= digit;
         result.user |= b;
     }
     else if (digit < NEC_ADDRESS_REV)
     {
-        b <<= digit - NEC_ADDRESS_REV;
         rev[0] |= b;
     }
     else if (digit < NEC_COMMAND)
     {
-        b <<= digit - NEC_COMMAND;
         result.key |= b;
     }
     else if (digit < NEC_COMMAND_REV)
     {
-        b <<= digit - NEC_COMMAND_REV;
         rev[1] |= b;
         if (digit == (NEC_COMMAND_REV - 2))
         {
             while (current < 13)
                 ;
-            if (P3_3)
-            {
-                b = 1;
-            }
-            else
-            {
-                b = 0;
-            }
-            b <<= NEC_COMMAND_REV - 1 - NEC_COMMAND;
+            b = P3_3 ? 0x00 : 0x80;
             rev[1] |= b;
             digit++;
         }
     }
     digit++;
+    if ((digit % 8) == 0)
+    {
+        mask = 0x01;
+    }
+    else
+    {
+        rr();
+    }
     if (digit == NEC_COMMAND_REV)
     {
         EA = 0;
@@ -261,13 +259,13 @@ unsigned char decode_bit(unsigned char dif)
     const struct config* c = conf + result.type;
     if (equal(dif, c->num[0]))
     {
-        return 0;
+        return 0x00;
     }
     else if (equal(dif, c->num[1]))
     {
-        return 1;
+        return mask;
     }
-    return 2;
+    return 0xff;
 }
 void decode()
 {
@@ -302,7 +300,7 @@ void decode()
         return;
     }
     unsigned char tmp = decode_bit(t);
-    if (tmp == 2)
+    if (tmp == 0xff)
     {
         reset();
         return;
@@ -369,6 +367,7 @@ void tf2() __interrupt(5) //tf2 vector
 void ie1() __interrupt(IE1_VECTOR)
 {
     tim[rx_pos] = current;
+    TR2 = 0;
     TL2 = RCAP2L;
     TH2 = RCAP2H;
     current = 0;
