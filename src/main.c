@@ -20,8 +20,8 @@ struct config
 #define SIRC_COMMAND 7
 #define SIRC_ADDRESS 15
 const __code struct config conf[2] = {
-    { 135, { 11, 23 } },
-    { 30, { 12, 18 } }
+    { 135, { 11 + 1, 23 + 1 } },
+    { 30, { 12 + 1, 18 + 1 } }
 };
 
 struct
@@ -39,7 +39,7 @@ struct
 volatile unsigned char tim[buf_size];
 volatile unsigned char rx_pos = 0;
 unsigned char decode_pos = 0;
-volatile unsigned char current = 0;
+volatile unsigned char current = 1;
 volatile unsigned char rx = 0x00, timeout = 0x00;
 
 __bit deco = 0, complete; // if is decoding
@@ -135,7 +135,7 @@ void reset_recv()
     TR2 = 0;
     TL2 = RCAP2L;
     TH2 = RCAP2H;
-    current = 0;
+    current = 1;
     rx_pos = 0;
     decode_pos = 0;
 
@@ -347,8 +347,14 @@ void main()
             {
                 rx = 0x00;
             }
+            if (complete)
+            {
+                update();
+                send(result.send);
+                reset_result();
+            }
         }
-        if (timeout)
+        else if (timeout)
         {
 #ifdef DEBUG_TIM
             sec(0xaa);
@@ -356,12 +362,6 @@ void main()
             reset_recv();
             reset_result();
             timeout = 0x00;
-        }
-        if (complete)
-        {
-            update();
-            send(result.send);
-            reset_result();
         }
     }
 }
@@ -381,7 +381,7 @@ void ie1() __interrupt(IE1_VECTOR)
     TR2 = 0;
     TL2 = RCAP2L;
     TH2 = RCAP2H;
-    current = 0;
+    current = 1;
     TR2 = 1;
     rx_pos++;
     if (rx_pos == buf_size)
