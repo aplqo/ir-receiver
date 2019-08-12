@@ -242,13 +242,15 @@ void decode_nec(unsigned char b)
         send(result.key);
         send(rev[1]);
 #endif
-        if ((~rev[0]) != result.user)
+        if ((rev[0] ^ result.user) != 0xff)
         {
+            send(0xe1);
             reset_result();
             return;
         }
-        if ((~rev[1]) != result.key)
+        if ((rev[1] ^ result.key) != 0xff)
         {
+            send(0xe2);
             reset_result();
             return;
         }
