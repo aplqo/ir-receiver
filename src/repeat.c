@@ -22,7 +22,7 @@ unsigned char getRepeat()
             tmp = eeRead(addr);
             addr++;
             size = eeRead(addr);
-            if (tmp == result.user)
+            if (tmp != result.user)
             {
                 addr += 2 + size;
                 continue;
