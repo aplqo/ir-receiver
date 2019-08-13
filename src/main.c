@@ -37,15 +37,16 @@ struct
     unsigned char send;
 } result;
 unsigned char rev[2];
+unsigned char digit;
+unsigned char mask = 0x01;
+
 volatile unsigned char tim[buf_size];
 volatile unsigned char rx_pos = 0;
 unsigned char decode_pos = 0;
 volatile unsigned char current = 1;
-volatile unsigned char rx = 0x00, timeout = 0x00;
 
+volatile unsigned char rx = 0x00, timeout = 0x00;
 __bit deco = 0, complete; // if is decoding
-unsigned char digit;
-unsigned char mask = 0x01;
 
 void send(unsigned char);
 
