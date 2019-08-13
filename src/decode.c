@@ -4,6 +4,7 @@
 #include <8052.h>
 #include <stdbool.h>
 #include "serial.h"
+#include "debug.h"
 
 #define buf_size 34
 
@@ -183,13 +184,17 @@ void decode_nec(unsigned char b)
 #endif
         if ((rev[0] ^ result.user) != 0xff)
         {
+#ifdef DEBUG_ERR
             send(0xe1);
+#endif
             reset_result();
             return;
         }
         if ((rev[1] ^ result.key) != 0xff)
         {
+#ifdef DEBUG_ERR
             send(0xe2);
+#endif
             reset_result();
             return;
         }
