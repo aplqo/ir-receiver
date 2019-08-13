@@ -3,6 +3,7 @@
 // clang-format on
 #include "decode.h"
 #include "eeprom.h"
+#include "serial.h"
 #include "debug.h"
 
 void conv()
