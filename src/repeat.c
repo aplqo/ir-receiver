@@ -10,7 +10,7 @@
 
 unsigned char getRepeat()
 {
-    unsigned int addr = 0x02;
+    unsigned int addr = 0x2002;
     __bit new = 0;
     unsigned char tmp, repeat, size;
     while (1)

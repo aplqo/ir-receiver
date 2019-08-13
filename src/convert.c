@@ -6,7 +6,7 @@
 
 void conv()
 {
-    unsigned int addr = eeReadInt(0x00);
+    unsigned int addr = eeReadInt(0x2000);
     unsigned char dat;
     while (1)
     {
