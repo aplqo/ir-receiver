@@ -34,7 +34,7 @@ unsigned char eeRead(unsigned int addr)
 unsigned int eeReadInt(unsigned int addr)
 {
     unsigned int i;
-    i = eeRead(addr);
     i = ((unsigned int)eeRead(addr + 1) << 8);
+    i = eeRead(addr);
     return i;
 }
