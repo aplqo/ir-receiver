@@ -36,7 +36,6 @@ struct
     unsigned char key;
     unsigned char send;
 } result;
-unsigned char count = 0;
 unsigned char rev[2];
 unsigned char digit;
 unsigned char mask = 0x01;
@@ -156,7 +155,6 @@ void reset_result()
     result.type = NUL;
     result.user = 0x00;
     result.key = 0x00;
-    count = 0;
 
     rev[0] = 0x00;
     rev[1] = 0x00;
@@ -200,9 +198,7 @@ void decode_sirc(unsigned char b)
     rr();
     if (digit == SIRC_ADDRESS)
     {
-        count++;
-        if (count == 2)
-            complete = 1;
+        complete = 1;
         reset_recv();
 #ifdef DEBUG_SIRC
         sec(0xcc);
@@ -324,9 +320,7 @@ void decode()
             send(result.user);
             send(result.key);
 #endif
-            count++;
-            if (count == 2)
-                complete = 1;
+            complete = 1;
             return;
         }
         reset_result();
@@ -385,11 +379,10 @@ void main()
             reset_recv();
             if ((result.type == SIRC) && (digit == 11))
             {
-                count++;
-                if (count == 2)
-                    finish();
+                finish();
                 continue;
             }
+            reset_recv();
             reset_result();
             timeout = 0x00;
         }
