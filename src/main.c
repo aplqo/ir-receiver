@@ -7,6 +7,8 @@
 #include "decode.h"
 #include "serial.h"
 #include "debug.h"
+#include "conv.h"
+#include "repeat.h"
 
 void init()
 {
@@ -63,8 +65,28 @@ void update()
 }
 void finish()
 {
-    update();
+    static unsigned char ign, count;
+    switch (result.type)
+    {
+    case NEC:
+        conv();
+        break;
+    case SIRC:
+        count++;
+        if (count == 1)
+        {
+            ign = getRepeat();
+            break;
+        }
+        if (count == ign)
+        {
+            count = 0;
+        }
+        reset_result();
+        return;
+    }
     send(result.send);
+    update();
     reset_result();
 }
 
