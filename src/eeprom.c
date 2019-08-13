@@ -19,16 +19,16 @@ unsigned char eeRead(unsigned int addr)
     ISP_ADDRL = (unsigned char)addr & 0x00ff;
     ISP_CMD = RdCom;
 
-    EA = 0;
     ISP_CONTR = 0x81;
-
     ISP_TRIG = 0x46;
+
+    EA = 0;
     ISP_TRIG = 0xb9;
+    EA = 1;
     __asm__("nop");
 
     ISP_CONTR = 0x00;
     ISP_TRIG = 0x00;
-    EA = 1;
     return (ISP_DATA);
 }
 unsigned int eeReadInt(unsigned int addr)
