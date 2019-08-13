@@ -7,8 +7,6 @@
 #include "decode.h"
 #include "serial.h"
 
-void send(unsigned char);
-
 #ifdef DEBUG
 void sec(unsigned char num)
 {
