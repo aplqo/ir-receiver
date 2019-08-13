@@ -1,6 +1,7 @@
 // clang-format off
 #include<lint.h>
 // clang-format on
+#define ISR
 #include <8052.h>
 #include <stdbool.h>
 #include "lcd.h"
