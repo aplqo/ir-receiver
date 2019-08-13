@@ -6,79 +6,41 @@
 #include <stdbool.h>
 
 // default repeat
-#define DEFAULT
+#define DEFAULT 3
 
-struct repeat
+unsigned char getRepeat()
 {
-    unsigned char user;
-    unsigned char key[5];
-    unsigned char ignore;
-    unsigned char size;
-} r;
-struct pointer
-{
-    unsigned int address;
-    __bit begin;
-    unsigned char rdsize;
-} p;
-static unsigned char readRepeat()
-{
-    unsigned char tmp = eeRead(p.address);
-    if (!(p.begin))
+    unsigned int addr = 0x02;
+    __bit new = 0;
+    unsigned char tmp, repeat, size;
+    while (1)
     {
-        if (tmp == 0xee)
+        tmp = eeRead(addr);
+        if (tmp == 0xcc)
         {
-            p.address++;
-            r.user = eeRead(p.address);
-            p.address++;
-            r.user = eeRead(p.address);
-            p.address++;
-            r.size = eeRead(p.address);
+            addr++;
+            tmp = eeRead(addr);
+            addr++;
+            size = eeRead(addr);
+            if (tmp == result.user)
+            {
+                addr += 2 + size;
+                continue;
+            }
+            addr++;
+            repeat = eeRead(addr);
+            addr++;
         }
         else
         {
-            p.address = 0x02;
-            return 0;
+            return DEFAULT;
         }
-    }
-    for (tmp = 0; (tmp < 5) && (p.rdsize < r.size); p.rdsize++, p.address++, tmp++)
-    {
-        r.key[tmp] = eeRead(p.address);
-    }
-    if (p.rdsize == r.size)
-    {
-        p.begin = 0;
-        p.rdsize = 0;
-    }
-    return tmp;
-}
-unsigned char getRepeat()
-{
-    __bit end = 0;
-    unsigned char tmp;
-    while (1)
-    {
-        tmp = readRepeat();
-        if (tmp == 0)
+        for (unsigned char i = 0; i < size; i++, addr++)
         {
-            if (end)
+            tmp = eeRead(addr);
+            if (tmp == result.key)
             {
-                return DEFAULT;
-            }
-            end = 1;
-        }
-        if (r.user != result.user)
-        {
-            p.address += r.size - p.rdsize + 1;
-            p.begin = 0;
-            p.rdsize = 0;
-            continue;
-        }
-        for (unsigned char i = 0; i < tmp; i++)
-        {
-            if (r.key[i] == result.key)
-            {
-                return r.ignore;
+                return repeat;
             }
         }
     }
