@@ -67,7 +67,6 @@ void update()
 void finish()
 {
     static unsigned char ign, count;
-    conv();
     if (result.type == SIRC)
     {
         count++;
@@ -84,6 +83,7 @@ void finish()
         return;
     }
 ok:;
+    conv();
     send(result.send);
     update();
     reset_result();
