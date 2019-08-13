@@ -143,6 +143,7 @@ void reset_recv()
 
     EA = 1;
     timeout = 0x00;
+    deco = 0;
 #ifdef DEBUG_RESET
     sec(0x01);
     send(0xc0);
@@ -160,7 +161,6 @@ void reset_result()
     digit = 0;
     mask = 0x01;
 
-    deco = 0;
     complete = 0;
 
 #ifdef DEBUG_RESET
@@ -177,11 +177,12 @@ void decode_sirc(unsigned char b)
     else if (digit < SIRC_ADDRESS)
     {
         result.user |= b;
-        if (digit == SIRC_ADDRESS - 2)
+        if ((digit == 12 - 2) || (digit == 15 - 2))
         {
+            rr();
             while (current < 9 + 1)
                 ;
-            b = P3_3 ? 0x80 : 0x00;
+            b = P3_3 ? mask : 0x00;
             result.user |= b;
             digit++;
         }
@@ -195,7 +196,6 @@ void decode_sirc(unsigned char b)
     rr();
     if (digit == SIRC_ADDRESS)
     {
-        deco = 0;
         complete = 1;
         reset_recv();
 #ifdef DEBUG_SIRC
@@ -256,7 +256,6 @@ void decode_nec(unsigned char b)
             reset_result();
             return;
         }
-        deco = 0;
         complete = 1;
     }
 }
@@ -311,6 +310,11 @@ void decode()
     if (tmp == 0xff)
     {
         reset_recv();
+        if ((result.type == SIRC) && (digit == 12))
+        {
+            complete = 1;
+            return;
+        }
         reset_result();
         return;
     }
@@ -333,6 +337,12 @@ void send(unsigned char dat)
     TI = 0;
     SBUF = dat;
 }
+void finish()
+{
+    update();
+    send(result.send);
+    reset_result();
+}
 
 void main()
 {
@@ -350,9 +360,7 @@ void main()
             }
             if (complete)
             {
-                update();
-                send(result.send);
-                reset_result();
+                finish();
             }
         }
         else if (timeout)
@@ -360,6 +368,15 @@ void main()
 #ifdef DEBUG_TIM
             sec(0xaa);
 #endif
+            if (result.type == SIRC)
+            {
+                if (digit == 12)
+                {
+                    reset_recv();
+                    finish();
+                }
+                continue;
+            }
             reset_recv();
             reset_result();
             timeout = 0x00;
