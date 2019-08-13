@@ -20,7 +20,6 @@ unsigned char eeRead(unsigned int addr)
     ISP_CMD = RdCom;
 
     EA = 0;
-    ISP_CONTR = 0x01;
     ISP_CONTR = 0x81;
 
     ISP_TRIG = 0x46;
