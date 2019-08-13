@@ -184,8 +184,9 @@ void decode_sirc(unsigned char b)
                 ;
             b = P3_3 ? mask : 0x00;
             result.user |= b;
-            digit++;
         }
+        if (digit == 15 - 2)
+            digit++;
     }
     digit++;
     if (digit == SIRC_COMMAND)
@@ -310,8 +311,14 @@ void decode()
     if (tmp == 0xff)
     {
         reset_recv();
-        if ((result.type == SIRC) && (digit == 12))
+        if ((result.type == SIRC) && (digit == 11))
         {
+#ifdef DEBUG_SIRC
+            sec(0xcc);
+            send(0x0c);
+            send(result.user);
+            send(result.key);
+#endif
             complete = 1;
             return;
         }
@@ -368,16 +375,12 @@ void main()
 #ifdef DEBUG_TIM
             sec(0xaa);
 #endif
-            if (result.type == SIRC)
+            reset_recv();
+            if ((result.type == SIRC) && (digit == 12))
             {
-                if (digit == 12)
-                {
-                    reset_recv();
-                    finish();
-                }
+                finish();
                 continue;
             }
-            reset_recv();
             reset_result();
             timeout = 0x00;
         }
