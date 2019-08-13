@@ -136,11 +136,13 @@ void reset_recv()
     TR2 = 0;
     TL2 = RCAP2L;
     TH2 = RCAP2H;
+    TF2 = 0;
     current = 1;
     rx_pos = 0;
     decode_pos = 0;
 
     EA = 1;
+    timeout = 0x00;
 #ifdef DEBUG_RESET
     sec(0x01);
     send(0xc0);
@@ -381,6 +383,7 @@ void ie1() __interrupt(IE1_VECTOR)
     TL2 = RCAP2L;
     TH2 = RCAP2H;
     current = 1;
+    TF2 = 0;
     TR2 = 1;
     rx_pos++;
     if (rx_pos == buf_size)
