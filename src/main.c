@@ -67,17 +67,14 @@ void update()
 void finish()
 {
     static unsigned char ign, count;
-    switch (result.type)
+    conv();
+    if (result.type == SIRC)
     {
-    case NEC:
-        conv();
-        break;
-    case SIRC:
         count++;
         if (count == 1)
         {
             ign = getRepeat();
-            break;
+            goto ok;
         }
         if (count == ign)
         {
@@ -86,6 +83,7 @@ void finish()
         reset_result();
         return;
     }
+ok:;
     send(result.send);
     update();
     reset_result();

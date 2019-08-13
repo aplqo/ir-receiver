@@ -4,7 +4,7 @@
 #include "decode.h"
 #include "eeprom.h"
 
-void conv(unsigned char type)
+void conv()
 {
     unsigned int addr = eeReadInt(0x00);
     unsigned char dat;
