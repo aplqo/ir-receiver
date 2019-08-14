@@ -43,12 +43,14 @@ void conv()
             addr += 3;
             continue;
         }
+        addr++;
+        dat = eeRead(addr);
+#ifdef DEBUG_CONV_DAT
+        send(dat);
+#endif
         if (dat == result.key)
         {
             result.send = eeRead(addr + 1);
-#ifdef DEBUG_CONV_DAT
-            send(result.send);
-#endif
 #ifdef DEBUG_CONV
             send(0x0f);
 #endif
