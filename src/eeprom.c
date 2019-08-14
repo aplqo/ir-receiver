@@ -4,7 +4,7 @@
 #include <8052.h>
 
 /*---sfrs---*/
-__sfr __at(0xec) ISP_DATA;
+__sfr __at(0xe2) ISP_DATA;
 __sfr __at(0xe3) ISP_ADDRH;
 __sfr __at(0xe4) ISP_ADDRL;
 __sfr __at(0xe5) ISP_CMD;
@@ -35,6 +35,6 @@ unsigned int eeReadInt(unsigned int addr)
 {
     unsigned int i;
     i = ((unsigned int)eeRead(addr)) << 8;
-    i = eeRead(addr + 1);
+    i |= (unsigned int)eeRead(addr + 1);
     return i;
 }
