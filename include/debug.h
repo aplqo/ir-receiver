@@ -11,5 +11,6 @@ void sec(unsigned char num);
 #define DEBUG_RESET
 #define DEBUG_EQUAL
 #define DEBUG_CONV
+#define DEBUG_CONV_DAT
 
 #endif

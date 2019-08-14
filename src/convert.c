@@ -16,12 +16,18 @@ void conv()
     while (1)
     {
         dat = eeRead(addr);
+#ifdef DEBUG_CONV_DAT
+        send(dat);
+#endif
         if (dat != 0xee)
         {
             break;
         }
         addr++;
         dat = eeRead(addr);
+#ifdef DEBUG_CONV_DAT
+        send(dat);
+#endif
         if (dat != result.type)
         {
             addr += 4;
@@ -29,6 +35,9 @@ void conv()
         }
         addr++;
         dat = eeRead(addr);
+#ifdef DEBUG_CONV_DAT
+        send(dat);
+#endif
         if (dat != result.user)
         {
             addr += 3;
@@ -37,6 +46,9 @@ void conv()
         if (dat == result.key)
         {
             result.send = eeRead(addr + 1);
+#ifdef DEBUG_CONV_DAT
+            send(result.send);
+#endif
 #ifdef DEBUG_CONV
             send(0x0f);
 #endif
