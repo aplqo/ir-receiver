@@ -66,6 +66,7 @@ void update()
 }
 void finish()
 {
+#ifndef DEISBALE_REPEAT
     static unsigned char ign, count;
     if (result.type == SIRC)
     {
@@ -83,6 +84,7 @@ void finish()
         return;
     }
 ok:;
+#endif
     conv();
     send(result.send);
     update();
