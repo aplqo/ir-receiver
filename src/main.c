@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "conv.h"
 #include "repeat.h"
+#include "filter.h"
 
 void init()
 {
@@ -47,7 +48,7 @@ void init()
     TR1 = 1;
 }
 
-void update()
+void update(unsigned char s)
 {
     switch (result.type)
     {
@@ -60,7 +61,14 @@ void update()
         display_str(0x00, 4, "SIRC");
         break;
     }
-    display_uchar(0x0c, result.send);
+    if (s)
+    {
+        display_uchar(0x0c, result.send);
+    }
+    else
+    {
+        display_str(0x0c, 2, "--");
+    }
     display_uchar(0x44, result.key);
     display_uchar(0x4d, result.user);
 }
@@ -91,8 +99,10 @@ void finish()
 ok:;
 #endif
     conv();
-    send(result.send);
-    update();
+    _Bool f = filter();
+    if (f)
+        send(result.send);
+    update(f);
     reset_result();
 }
 

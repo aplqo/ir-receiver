@@ -15,7 +15,7 @@ unsigned char getRepeat()
 #ifdef DEBUG_REPEAT
     sec(0xbb);
 #endif
-    unsigned int addr = 0x2002;
+    unsigned int addr = 0x2004;
     __bit new = 0;
     unsigned char tmp, repeat, size;
     while (1)
