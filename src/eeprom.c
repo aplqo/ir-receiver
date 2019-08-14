@@ -15,8 +15,8 @@ __sfr __at(0xe7) ISP_CONTR;
 
 unsigned char eeRead(unsigned int addr)
 {
-    ISP_ADDRH = (unsigned char)addr >> 4;
-    ISP_ADDRL = (unsigned char)addr & 0x00ff;
+    ISP_ADDRH = (unsigned char)(addr >> 8);
+    ISP_ADDRL = (unsigned char)(addr & 0x00ff);
     ISP_CMD = RdCom;
 
     ISP_CONTR = 0x81;
@@ -34,7 +34,7 @@ unsigned char eeRead(unsigned int addr)
 unsigned int eeReadInt(unsigned int addr)
 {
     unsigned int i;
-    i = ((unsigned int)eeRead(addr + 1) << 8);
-    i = eeRead(addr);
+    i = ((unsigned int)eeRead(addr)) << 8;
+    i = eeRead(addr + 1);
     return i;
 }
