@@ -66,7 +66,7 @@ void update()
 }
 void finish()
 {
-#ifndef DEISBALE_REPEAT
+#ifndef DISABLE_REPEAT
     static unsigned char ign, count;
     if (result.type == SIRC)
     {
