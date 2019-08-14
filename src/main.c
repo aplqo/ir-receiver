@@ -70,6 +70,11 @@ void finish()
     static unsigned char ign, count;
     if (result.type == SIRC)
     {
+#ifdef DEBUG_IGNORE
+        sec(0x33);
+        send(ign);
+        send(count);
+#endif
         count++;
         if (count == 1)
         {

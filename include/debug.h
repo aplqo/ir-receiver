@@ -13,6 +13,7 @@ void sec(unsigned char num);
 #define DEBUG_CONV
 #define DEBUG_CONV_DAT
 #define DEBUG_REPEAT
+#define DEBUG_IGNORE
 #define DISABLE_REPEAT
 
 #endif
