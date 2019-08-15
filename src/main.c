@@ -8,9 +8,7 @@
 #include "decode.h"
 #include "serial.h"
 #include "debug.h"
-#include "conv.h"
-#include "repeat.h"
-#include "filter.h"
+#include "util.h"
 
 void init()
 {
