@@ -15,13 +15,14 @@ void init()
     P0 = 0xff;
     //timer init
     {
-        TMOD = 0x22;
+        TMOD = 0x20;
         TH2 = 0xff;
-        TL2 = 0xa4;
+        TL2 = 0xdc;
         RCAP2H = 0xff;
-        RCAP2L = 0xa4;
-        TH1 = 0xfd;
-        TL1 = 0xfd;
+        RCAP2L = 0xdc;
+        T2CON = 0x34;
+        TH1 = 0xa4;
+        TL1 = 0xa4;
     }
     {
         SCON = 0x40; // mode 1
@@ -31,7 +32,7 @@ void init()
     {
         IT1 = 1;
         EX1 = 1;
-        ET2 = 1;
+        ET1 = 1;
     }
     // lcd init
     {
@@ -43,7 +44,6 @@ void init()
         display_str(0x40, 4, "Key:");
         display_str(0x48, 5, "User:");
     }
-    TR1 = 1;
 }
 
 void update(unsigned char s)

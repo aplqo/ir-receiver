@@ -69,10 +69,9 @@ void reset_recv()
 {
     EA = 0;
 
-    TR2 = 0;
-    TL2 = RCAP2L;
-    TH2 = RCAP2H;
-    TF2 = 0;
+    TR1 = 0;
+    TL1 = TH1;
+    TF1 = 0;
     current = 1;
     rx_pos = 0;
     decode_pos = 0;
@@ -286,9 +285,8 @@ void decode()
         break;
     }
 }
-void tf2() __interrupt(5) //tf2 vector
+void tf1() __interrupt(TF1_VECTOR) //tf2 vector
 {
-    TF2 = 0;
     current++;
     if (current == 0)
     {
@@ -298,12 +296,10 @@ void tf2() __interrupt(5) //tf2 vector
 void ie1() __interrupt(IE1_VECTOR)
 {
     tim[rx_pos] = current;
-    TR2 = 0;
-    TL2 = RCAP2L;
-    TH2 = RCAP2H;
+    TR1 = 0;
+    TL1 = TH1;
     current = 1;
-    TF2 = 0;
-    TR2 = 1;
+    TR1 = 1;
     rx_pos++;
     if (rx_pos == buf_size)
     {

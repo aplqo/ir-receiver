@@ -29,7 +29,7 @@ void decode();
 _Bool sirc_type();
 
 #ifdef ISR
-extern void tf2() __interrupt(5);
+extern void tf1() __interrupt(TF1_VECTOR);
 extern void ie1() __interrupt(IE1_VECTOR);
 #undef ISR
 #endif
