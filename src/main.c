@@ -34,6 +34,7 @@ void init()
         EX1 = 1;
         ET1 = 1;
     }
+#ifdef DISPLAY
     // lcd init
     {
         lcd_write(0, 0x38);
@@ -44,8 +45,10 @@ void init()
         display_str(0x40, 4, "Key:");
         display_str(0x48, 5, "User:");
     }
+#endif
 }
 
+#ifdef DISPLAY
 void update(unsigned char s)
 {
     switch (result.type)
@@ -70,6 +73,7 @@ void update(unsigned char s)
     display_uchar(0x44, result.key);
     display_uchar(0x4d, result.user);
 }
+#endif
 void finish()
 {
 #ifndef DISABLE_REPEAT
@@ -95,7 +99,9 @@ ok:;
     _Bool f = filter();
     if (f)
         send(result.send);
+#ifdef DISPLAY
     update(f);
+#endif
     reset_result();
 }
 
