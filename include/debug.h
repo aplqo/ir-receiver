@@ -4,16 +4,6 @@
 void sec(unsigned char num);
 
 /*---macros for debug---*/
-#define DEBUG_SIRC
-#define DEBUG_NEC
-#define DEBUG_TIM
-#define DEBUG_ERR
-#define DEBUG_RESET
-#define DEBUG_EQUAL
-#define DEBUG_CONV
-#define DEBUG_CONV_DAT
-#define DEBUG_REPEAT
-#define DEBUG_IGNORE
 #define DISABLE_REPEAT
 
 #endif

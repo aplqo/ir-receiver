@@ -76,11 +76,6 @@ void finish()
     static unsigned char ign, count;
     if (result.type == SIRC)
     {
-#ifdef DEBUG_IGNORE
-        sec(0x33);
-        send(ign);
-        send(count);
-#endif
         count++;
         if (count == 1)
         {
@@ -121,9 +116,6 @@ void main()
         }
         else if (timeout)
         {
-#ifdef DEBUG_TIM
-            sec(0xaa);
-#endif
             reset_recv();
             if (sirc_type())
             {

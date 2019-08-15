@@ -52,11 +52,6 @@ __bit deco = 0, complete = 0; // if is decoding
 
 _Bool equal(unsigned char a, unsigned char b, unsigned char dif)
 {
-#ifdef DEBUG_EQUAL
-    sec(0xee);
-    send(a);
-    send(b);
-#endif
     unsigned char b1 = b + dif;
     unsigned char b2 = b - dif;
     return (a <= b1 && a >= b2);
@@ -80,10 +75,6 @@ void reset_recv()
     timeout = 0x00;
     deco = 0;
     rx = 0x00;
-#ifdef DEBUG_RESET
-    sec(0x01);
-    send(0xc0);
-#endif
 }
 void reset_result()
 {
@@ -98,11 +89,6 @@ void reset_result()
     mask = 0x01;
 
     complete = 0;
-
-#ifdef DEBUG_RESET
-    sec(0x01);
-    send(0xe0);
-#endif
 }
 void decode_sirc(unsigned char b)
 {
@@ -135,12 +121,6 @@ void decode_sirc(unsigned char b)
     {
         complete = 1;
         reset_recv();
-#ifdef DEBUG_SIRC
-        sec(0xcc);
-        send(0x0c);
-        send(result.user);
-        send(result.key);
-#endif
     }
 }
 void decode_nec(unsigned char b)
@@ -173,27 +153,13 @@ void decode_nec(unsigned char b)
     if (digit == NEC_COMMAND_REV)
     {
         reset_recv();
-#ifdef DEBUG_NEC
-        sec(0xcc);
-        send(0x0e);
-        send(result.user);
-        send(rev[0]);
-        send(result.key);
-        send(rev[1]);
-#endif
         if ((rev[0] ^ result.user) != 0xff)
         {
-#ifdef DEBUG_ERR
-            send(0xe1);
-#endif
             reset_result();
             return;
         }
         if ((rev[1] ^ result.key) != 0xff)
         {
-#ifdef DEBUG_ERR
-            send(0xe2);
-#endif
             reset_result();
             return;
         }
@@ -204,12 +170,6 @@ _Bool sirc_type()
 {
     if ((result.type == SIRC) && (digit == 11))
     {
-#ifdef DEBUG_SIRC
-        sec(0xcc);
-        send(0x0c);
-        send(result.user);
-        send(result.key);
-#endif
         complete = 1;
         return true;
     }
@@ -237,11 +197,6 @@ void decode()
         decode_pos = 0;
     if (decode_pos == rx_pos)
         rx = 0x00;
-#ifdef DEBUG_TIM
-    sec(0xdd);
-    send(t);
-    send(digit);
-#endif
     if (!deco)
     {
         deco = 1;
