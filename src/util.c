@@ -7,7 +7,7 @@
 
 void conv()
 {
-    unsigned int addr = eeReadInt(0x2000);
+    unsigned int addr = eeReadInt(EEPROM);
     unsigned char dat;
     addr = findRecord(addr, 0xee, result.user);
     for (; addr != 0x00; addr = findRecord(addr, 0xee, result.user))
@@ -25,7 +25,7 @@ void conv()
 }
 _Bool filter()
 {
-    unsigned int addr = eeReadInt(0x2002);
+    unsigned int addr = eeReadInt(EEPROM + 0x02);
     addr = findRecord(addr, 0xff, 00);
     if (addr == 0x00)
         return false;
@@ -33,7 +33,7 @@ _Bool filter()
 }
 unsigned char getRepeat()
 {
-    unsigned int addr = 0x2004;
+    unsigned int addr = EEPROM + 0x04;
     addr = findRecord(addr, 0xcc, result.user);
     if (addr == 0x00)
         return DEFAULT;

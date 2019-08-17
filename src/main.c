@@ -16,16 +16,24 @@ void init()
     //timer init
     {
         TMOD = 0x20;
+#ifdef STC89C
         TH2 = 0xff;
         TL2 = 0xdc;
         RCAP2H = 0xff;
         RCAP2L = 0xdc;
         T2CON = 0x34;
+#endif
         TH1 = 0xa4;
         TL1 = 0xa4;
     }
     {
         SCON = 0x40; // mode 1
+#ifdef STC11F
+        __sfr __at(0x9c) BRT;
+        __sfr __at(0x8e) AUXR;
+        BRT = 250;
+        AUXR = 0x11;
+#endif
         TI = 1;
     }
     //interrupt init
