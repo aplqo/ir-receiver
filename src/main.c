@@ -27,9 +27,12 @@ void init()
         RCAP2H = 0xff;
         RCAP2L = 0xdc;
         T2CON = 0x34;
-#endif
         TH1 = 0xa4;
         TL1 = 0xa4;
+#elif STC11F
+        TH1 = 0x48;
+        TL1 = 0x48;
+#endif
     }
 #ifdef STC11F
     P1_0 = 0; // close ir led
