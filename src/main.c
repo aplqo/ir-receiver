@@ -10,6 +10,11 @@
 #include "debug.h"
 #include "util.h"
 
+#ifdef STC11F
+__sfr __at(0x9c) BRT;
+__sfr __at(0x8e) AUXR;
+#endif
+
 void init()
 {
     P0 = 0xff;
@@ -26,11 +31,12 @@ void init()
         TH1 = 0xa4;
         TL1 = 0xa4;
     }
+#ifdef STC11F
+    P1_0 = 0; // close ir led
+#endif
     {
         SCON = 0x40; // mode 1
 #ifdef STC11F
-        __sfr __at(0x9c) BRT;
-        __sfr __at(0x8e) AUXR;
         BRT = 250;
         AUXR = 0x11;
 #endif
