@@ -5,12 +5,29 @@
 #include "decode.h"
 
 /*---sfrs---*/
+#ifdef STC89C
 __sfr __at(0xe2) ISP_DATA;
 __sfr __at(0xe3) ISP_ADDRH;
 __sfr __at(0xe4) ISP_ADDRL;
 __sfr __at(0xe5) ISP_CMD;
 __sfr __at(0xe6) ISP_TRIG;
 __sfr __at(0xe7) ISP_CONTR;
+#elif STC11F
+__sfr __at(0xc2) ISP_DATA;
+__sfr __at(0xc3) ISP_ADDRH;
+__sfr __at(0xc4) ISP_ADDRL;
+__sfr __at(0xc5) ISP_CMD;
+__sfr __at(0xc6) ISP_TRIG;
+__sfr __at(0xc7) ISP_CONTR;
+#endif
+/*---trig number---*/
+#ifdef STC89C
+#define TRIG1 0x46
+#define TRIG2 0xb9
+#elif STC11F
+#define TRIG1 0x5a
+#define TRIG2 0xa5
+#endif
 /*---command---*/
 #define RdCom 0x01
 
@@ -22,10 +39,10 @@ unsigned char eeRead(unsigned int addr)
     ISP_CMD = RdCom;
 
     ISP_CONTR = 0x81;
-    ISP_TRIG = 0x46;
+    ISP_TRIG = TRIG1;
 
     EA = 0;
-    ISP_TRIG = 0xb9;
+    ISP_TRIG = TRIG2;
     EA = 1;
     __asm__("nop");
 
