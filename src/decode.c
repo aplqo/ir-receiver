@@ -24,6 +24,9 @@ const __code struct config conf[2] = {
     { 135, { 11 + 1, 23 + 1 }, 5 },
     { 30, { 12 + 1, 18 + 1 }, 2 }
 };
+#ifdef LED
+#define led P3_4
+#endif
 
 struct res
 {
@@ -72,6 +75,9 @@ void reset_recv()
     decode_pos = 0;
 
     EA = 1;
+#ifdef LED
+    led = 0;
+#endif
     timeout = 0x00;
     deco = 0;
     rx = 0x00;
@@ -200,6 +206,9 @@ void decode()
     if (!deco)
     {
         deco = 1;
+#ifdef LED
+        led = 1;
+#endif
         return;
     }
     if (result.type == NUL) //decode start bit
