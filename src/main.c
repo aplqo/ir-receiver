@@ -63,6 +63,9 @@ void init()
         display_str(0x48, 5, "User:");
     }
 #endif
+#ifdef led
+    led = 1;
+#endif
 }
 
 #ifdef DISPLAY
