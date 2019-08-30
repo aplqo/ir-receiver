@@ -4,7 +4,7 @@ IR receiver for NEC and SIRC
 Support mcu(board):
 mcu|freq|mode|note
 ---|----|----|----
-stc89c52rc|11.0592MHz|12T|
+stc89c52rc|11.0592MHz|12T||
 stc11f02e|22.1184MHz|1T (uart/timer: 12T)|Testing|
 port|function
 ----|--------
@@ -29,7 +29,7 @@ Record type|flag
 -----------|----
 convert|0xee|
 repeat|0xcc|
-filter|0xff|
+filter|0xff|    
 Type definion:
 ```c
 enum type
